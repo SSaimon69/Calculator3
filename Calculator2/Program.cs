@@ -18,11 +18,11 @@ namespace Calculator2
         static void Main(string[] args)
         {
             Operation oper;
+            int[] mas = new int[0];
 
             while (true)
             {
                 oper = getOperation();
-                int[] mas = new int[0];
 
                 if (oper == Operation.esc) break;
                 if (oper != Operation.init && mas.Length == 0)
@@ -75,11 +75,15 @@ namespace Calculator2
                         {
                             int sum = 0;
                             foreach (int elem in mas) sum += elem;
-                            Console.WriteLine("Среднеарифметическое массива: " + sum/mas.Length);
+                            Console.WriteLine("Среднее арифметическое массива: " + sum/mas.Length);
                         }; break;
                     case Operation.midGeo:
                         {
-                        }break;
+                            int mul = 1;
+                            foreach (int elem in mas) mul *= elem;
+                            Console.WriteLine("Среднее геометрическое массива: " + Math.Pow(mul, 1 / mas.Length));
+                        }
+                        break;
                 }
             }
             Console.Clear();
