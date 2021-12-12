@@ -58,7 +58,12 @@ namespace Calculator2
                             foreach(int elem in mas) if (elem > max) max = elem;
                             Console.WriteLine("Максимальный элемент: " + max);
                         }; break;
-                    case Operation.min:; break;
+                    case Operation.min:
+                        {
+                            int min = mas[0];
+                            foreach (int elem in mas) if (elem < min) min = elem;
+                            Console.WriteLine("Минимальный элемент: " + min);
+                        }; break;
                     case Operation.sum:
                         {
                         }
