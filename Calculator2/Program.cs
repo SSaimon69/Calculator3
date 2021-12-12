@@ -71,7 +71,12 @@ namespace Calculator2
                             Console.WriteLine("Сумма элементов массива: " + sum);
                         }
                         break;
-                    case Operation.midAr:; break;
+                    case Operation.midAr:
+                        {
+                            int sum = 0;
+                            foreach (int elem in mas) sum += elem;
+                            Console.WriteLine("Среднеарифметическое массива: " + sum/mas.Length);
+                        }; break;
                     case Operation.midGeo:
                         {
                         }break;
