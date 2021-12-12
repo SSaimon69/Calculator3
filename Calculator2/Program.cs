@@ -23,7 +23,6 @@ namespace Calculator2
             {
                 oper = getOperation();
                 int[] mas = new int[0];
-                double res = 0;
 
                 if (oper == Operation.esc) break;
                 if (oper != Operation.init && mas.Length == 0)
@@ -52,36 +51,23 @@ namespace Calculator2
                             {
                                 mas[count++] = int.Parse(num);
                             }
-
                         }; break;
                     case Operation.max:
                         {
+                            int max = mas[0];
+                            foreach(int elem in mas) if (elem > max) max = elem;
+                            Console.WriteLine("Максимальный элемент: " + max);
                         }; break;
                     case Operation.min:; break;
                     case Operation.sum:
                         {
-                            if (n2 == 0)
-                            {
-                                Console.WriteLine("Я бы не советовал делить на 0, попробуйте что нибудь другое");
-                            }
-                            else res = n1 / n2;
                         }
                         break;
-                    case Operation.midAr: res = n1 % n2; break;
+                    case Operation.midAr:; break;
                     case Operation.midGeo:
                         {
-                            Console.Write("Введите показатель степени: ");
-                            int pokaz;
-                            while (!int.TryParse(Console.ReadLine(), out pokaz))
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Вы ввели не число!");
-                                Console.Write("Введите первое число: ");
-                            }
-                            res = Math.Pow(n1, pokaz);
-                        }; break;
+                        }break;
                 }
-                Console.WriteLine("Результат вашей операции: " + res);
             }
             Console.Clear();
             Console.WriteLine("Вы вышли из калькулятора");
