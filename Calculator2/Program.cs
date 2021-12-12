@@ -85,9 +85,11 @@ namespace Calculator2
                         }
                         break;
                 }
+                Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
+                Console.ReadKey(false);
             }
             Console.Clear();
-            Console.WriteLine("Вы вышли из калькулятора");
+            Console.WriteLine("ВВы вышли из калькулятора");
             Console.ReadKey();
         }
 
@@ -107,8 +109,8 @@ namespace Calculator2
                               "Выход: esc");
             Console.WriteLine();
             Console.Write("Введите операцию из перечисленных: ");
-            oper = Console.ReadKey();
-
+            oper = Console.ReadKey(false);
+            Console.Clear();
             while (!operMas.Contains(oper.KeyChar))
             {
                 Console.Clear();
