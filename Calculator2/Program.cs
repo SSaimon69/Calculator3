@@ -66,6 +66,9 @@ namespace Calculator2
                         }; break;
                     case Operation.sum:
                         {
+                            int sum = 0;
+                            foreach (int elem in mas) sum += elem;
+                            Console.WriteLine("Сумма элементов массива: " + sum);
                         }
                         break;
                     case Operation.midAr:; break;
