@@ -55,7 +55,7 @@ namespace Calculator2
                     case Operation.max:
                         {
                             int max = mas[0];
-                            foreach(int elem in mas) if (elem > max) max = elem;
+                            foreach (int elem in mas) max = elem > max ? elem : max;
                             Console.WriteLine("Максимальный элемент: " + max);
                         }; break;
                     case Operation.min:
