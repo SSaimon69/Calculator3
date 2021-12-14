@@ -39,25 +39,25 @@ namespace Calculator2
                         {
                             int count,count2;
                             Console.Write("Введите размерность массива (для двумерного массива напишите размерность через пробел): ");
-                            string str = Console.ReadLine();
                             string [] masStr = Console.ReadLine().Split(' ');
 
                             count = int.Parse(masStr[0]);
                             count2 = masStr.Length > 1 ? int.Parse(masStr[1]) : 1;
-                            mas = new int[count,count2];
+                            mas = new int[count2,count];
 
                             Console.Write("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
                             count = 0;
                             count2 = 0;
                             foreach (string num in Console.ReadLine().Split(' '))
                             {
-                                mas[count++,count2] = int.Parse(num);
-                                if (count > mas.GetLength(0))
+                                mas[count2, count++] = int.Parse(num);
+                                if (count == mas.GetLength(1))
                                 {
                                     count = 0;
                                     count2++;
                                 }
                             }
+                            printMas(mas);
                         }; break;
                     case Operation.max:
                         {
@@ -96,15 +96,34 @@ namespace Calculator2
                             Console.Write("Введите число, на которое будет умножена матрица: ");
                             int num = int.Parse(Console.ReadLine());
 
-                            for(int i = 0; i < mas.GetLength(1); i ++)
+                            for(int i = 0; i < mas.GetLength(0); i ++)
                             {
-                                for (int j = 0; j < mas.GetLength(0); j++)
+                                for (int j = 0; j < mas.GetLength(1); j++)
                                 {
                                     mas[i, j] *= num;
                                     Console.Write(mas[i, j] + " ");
                                 }
                                 Console.WriteLine();
                             }    
+                        }
+                        break;
+                    case Operation.matrixTransp:
+                        {
+                            int [,] mas2 = new int[mas.GetLength(1), mas.GetLength(0)];
+                            int count = 0, count2 = 0;
+                            foreach(int elem in mas)
+                            {
+                                mas2[count++, count2] = elem;
+                                if (count == mas.GetLength(1))
+                                {
+                                    count = 0;
+                                    count2++;
+                                    if (count2 == mas.GetLength(0)) count2 = 0;
+                                }
+                            }
+                            mas = mas2;
+                            printMas(mas);
+
                         }break;
                 }
                 Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
@@ -118,7 +137,7 @@ namespace Calculator2
         static Operation getOperation()
         {
             ConsoleKeyInfo oper;
-            string operMas = "123456" + (char)ConsoleKey.Escape;
+            string operMas = "12345678" + (char)ConsoleKey.Escape;
 
             Console.Clear();
             Console.WriteLine("Список операций:");
@@ -128,8 +147,8 @@ namespace Calculator2
                               "Расчёт суммы всех чисел: 4\n" +
                               "Расчёт среднеарифметического: 5\n" +
                               "Расчёт среднегеометрического: 6\n" +
-                              "Произведение матрицы на число: 7n" +
-                              "Транспонирование матрицы: 8n" +
+                              "Произведение матрицы на число: 7\n" +
+                              "Транспонирование матрицы: 8\n" +
                               "Выход: esc");
             Console.WriteLine();
             Console.Write("Введите операцию из перечисленных: ");
@@ -155,6 +174,18 @@ namespace Calculator2
                 case (char)ConsoleKey.Escape: return Operation.esc;
             }
             throw new Exception();
+        }
+
+        static void printMas(int[,] mas)
+        {
+            for (int i = 0; i < mas.GetLength(0);i++)
+            {
+                for (int j = 0; j < mas.GetLength(1); j++)
+                {
+                    Console.Write(mas[i, j] + " ");
+                }
+                Console.WriteLine();
+            }
         }
     }
 }
