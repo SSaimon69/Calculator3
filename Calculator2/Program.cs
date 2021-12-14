@@ -12,13 +12,15 @@ namespace Calculator2
             sum,
             midAr,
             midGeo,
+            matrixMulNum,
+            matrixTransp,
             esc
         }
 
         static void Main(string[] args)
         {
             Operation oper;
-            int[] mas = new int[0];
+            int[,] mas = new int[0,0];
 
             while (true)
             {
@@ -35,32 +37,37 @@ namespace Calculator2
                 {
                     case Operation.init:
                         {
-                            int count;
-                            Console.Write("Введите размерность массива: ");
-                            while (!int.TryParse(Console.ReadLine(), out count) && count <= 0)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Вы ввели не число, либо число меньше или равно 0");
-                                Console.Write("Введите размерность массива: ");
-                            }
-                            mas = new int[count];
+                            int count,count2;
+                            Console.Write("Введите размерность массива (для двумерного массива напишите размерность через пробел): ");
+                            string str = Console.ReadLine();
+                            string [] masStr = Console.ReadLine().Split(' ');
 
-                            Console.Write("Введите массив указанной размерности через пробел: ");
+                            count = int.Parse(masStr[0]);
+                            count2 = masStr.Length > 1 ? int.Parse(masStr[1]) : 1;
+                            mas = new int[count,count2];
+
+                            Console.Write("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
                             count = 0;
+                            count2 = 0;
                             foreach (string num in Console.ReadLine().Split(' '))
                             {
-                                mas[count++] = int.Parse(num);
+                                mas[count++,count2] = int.Parse(num);
+                                if (count > mas.GetLength(0))
+                                {
+                                    count = 0;
+                                    count2++;
+                                }
                             }
                         }; break;
                     case Operation.max:
                         {
-                            int max = mas[0];
+                            int max = mas[0,0];
                             foreach (int elem in mas) max = elem > max ? elem : max;
                             Console.WriteLine("Максимальный элемент: " + max);
                         }; break;
                     case Operation.min:
                         {
-                            int min = mas[0];
+                            int min = mas[0,0];
                             foreach (int elem in mas) if (elem < min) min = elem;
                             Console.WriteLine("Минимальный элемент: " + min);
                         }; break;
@@ -84,6 +91,21 @@ namespace Calculator2
                             Console.WriteLine("Среднее геометрическое массива: " + Math.Pow(mul, 1 / mas.Length));
                         }
                         break;
+                    case Operation.matrixMulNum:
+                        {
+                            Console.Write("Введите число, на которое будет умножена матрица: ");
+                            int num = int.Parse(Console.ReadLine());
+
+                            for(int i = 0; i < mas.GetLength(1); i ++)
+                            {
+                                for (int j = 0; j < mas.GetLength(0); j++)
+                                {
+                                    mas[i, j] *= num;
+                                    Console.Write(mas[i, j] + " ");
+                                }
+                                Console.WriteLine();
+                            }    
+                        }break;
                 }
                 Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
                 Console.ReadKey(false);
@@ -106,6 +128,8 @@ namespace Calculator2
                               "Расчёт суммы всех чисел: 4\n" +
                               "Расчёт среднеарифметического: 5\n" +
                               "Расчёт среднегеометрического: 6\n" +
+                              "Произведение матрицы на число: 7n" +
+                              "Транспонирование матрицы: 8n" +
                               "Выход: esc");
             Console.WriteLine();
             Console.Write("Введите операцию из перечисленных: ");
@@ -126,6 +150,8 @@ namespace Calculator2
                 case '4': return Operation.sum;
                 case '5': return Operation.midAr;
                 case '6': return Operation.midGeo;
+                case '7': return Operation.matrixMulNum;
+                case '8': return Operation.matrixTransp;
                 case (char)ConsoleKey.Escape: return Operation.esc;
             }
             throw new Exception();
