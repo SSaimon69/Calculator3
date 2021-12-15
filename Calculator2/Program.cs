@@ -17,6 +17,70 @@ namespace Calculator2
             esc
         }
 
+        static Func<int[,], int> Max = (mas) =>
+        {
+            int max = mas[0, 0];
+            foreach (int elem in mas) max = elem > max ? elem : max;
+            return max;
+        };
+
+        static Func<int[,], int> Min = (mas) =>
+        {
+            int min = mas[0, 0];
+            foreach (int elem in mas) min = elem < min ? elem : min;
+            return min;
+        };
+
+        static Func<int[,], int> Sum = (mas) =>
+        {
+            int sum = 0;
+            foreach (int elem in mas) sum += elem;
+            return sum;
+        };
+
+        static Func<int[,], double> midAr = (mas) =>
+        {
+            int sum = 0;
+            foreach (int elem in mas) sum += elem;
+            return sum / mas.Length;
+        };
+
+        static Func<int[,], double> midGeo = (mas) =>
+        {
+            float mul = 1;
+            foreach (int elem in mas) mul *= elem;
+            return Math.Pow(mul, 1.0 / mas.Length);
+        };
+
+        static Func<int[,], int, int[,]> matrixMulNum = (mas, num) =>
+        {
+            for (int i = 0; i < mas.GetLength(0); i++)
+            {
+                for (int j = 0; j < mas.GetLength(1); j++)
+                {
+                    mas[i, j] *= num;
+                }
+            }
+            return mas;
+        };
+
+        static Func<int[,], int[,]> matrixTransp = (mas) =>
+        {
+            int[,] mas2 = new int[mas.GetLength(1), mas.GetLength(0)];
+            int count = 0, count2 = 0;
+            foreach (int elem in mas)
+            {
+                mas2[count++, count2] = elem;
+                if (count == mas.GetLength(1))
+                {
+                    count = 0;
+                    count2++;
+                    if (count2 == mas.GetLength(0)) count2 = 0;
+                }
+            }
+            return mas2;
+        };
+
         static void Main(string[] args)
         {
             Operation oper;
@@ -29,7 +93,8 @@ namespace Calculator2
                 if (oper == Operation.esc) break;
                 if (oper != Operation.init && mas.Length == 0)
                 {
-                    Console.WriteLine("Что ты собрался делать с пустым массивом ??? Введи массив сначала");
+                    Console.WriteLine("Что ты собрался делать с пустым массивом ??? Введи массив сначала (для продожения нажми любую клавишу)");
+                    Console.ReadKey();
                     continue;
                 }
 
@@ -45,7 +110,7 @@ namespace Calculator2
                             count2 = masStr.Length > 1 ? int.Parse(masStr[1]) : 1;
                             mas = new int[count2,count];
 
-                            Console.Write("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
+                            Console.WriteLine("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
                             count = 0;
                             count2 = 0;
                             foreach (string num in Console.ReadLine().Split(' '))
@@ -59,72 +124,18 @@ namespace Calculator2
                             }
                             printMas(mas);
                         }; break;
-                    case Operation.max:
-                        {
-                            int max = mas[0,0];
-                            foreach (int elem in mas) max = elem > max ? elem : max;
-                            Console.WriteLine("Максимальный элемент: " + max);
-                        }; break;
-                    case Operation.min:
-                        {
-                            int min = mas[0,0];
-                            foreach (int elem in mas) if (elem < min) min = elem;
-                            Console.WriteLine("Минимальный элемент: " + min);
-                        }; break;
-                    case Operation.sum:
-                        {
-                            int sum = 0;
-                            foreach (int elem in mas) sum += elem;
-                            Console.WriteLine("Сумма элементов массива: " + sum);
-                        }
-                        break;
-                    case Operation.midAr:
-                        {
-                            int sum = 0;
-                            foreach (int elem in mas) sum += elem;
-                            Console.WriteLine("Среднее арифметическое массива: " + sum/mas.Length);
-                        }; break;
-                    case Operation.midGeo:
-                        {
-                            int mul = 1;
-                            foreach (int elem in mas) mul *= elem;
-                            Console.WriteLine("Среднее геометрическое массива: " + Math.Pow(mul, 1 / mas.Length));
-                        }
-                        break;
+                    case Operation.max: Console.WriteLine("Максимальный элемент: " + Max(mas)); break;
+                    case Operation.min: Console.WriteLine("Минимальный элемент: " + Min(mas)); break;
+                    case Operation.sum: Console.WriteLine("Сумма элементов массива: " + Sum(mas));break;
+                    case Operation.midAr: Console.WriteLine("Среднее арифметическое массива: " + midAr(mas));break;
+                    case Operation.midGeo: Console.WriteLine("Среднее геометрическое массива: " + midGeo(mas));break;
                     case Operation.matrixMulNum:
                         {
                             Console.Write("Введите число, на которое будет умножена матрица: ");
-                            int num = int.Parse(Console.ReadLine());
-
-                            for(int i = 0; i < mas.GetLength(0); i ++)
-                            {
-                                for (int j = 0; j < mas.GetLength(1); j++)
-                                {
-                                    mas[i, j] *= num;
-                                    Console.Write(mas[i, j] + " ");
-                                }
-                                Console.WriteLine();
-                            }    
+                            printMas(matrixMulNum(mas, int.Parse(Console.ReadLine())));
                         }
                         break;
-                    case Operation.matrixTransp:
-                        {
-                            int [,] mas2 = new int[mas.GetLength(1), mas.GetLength(0)];
-                            int count = 0, count2 = 0;
-                            foreach(int elem in mas)
-                            {
-                                mas2[count++, count2] = elem;
-                                if (count == mas.GetLength(1))
-                                {
-                                    count = 0;
-                                    count2++;
-                                    if (count2 == mas.GetLength(0)) count2 = 0;
-                                }
-                            }
-                            mas = mas2;
-                            printMas(mas);
-
-                        }break;
+                    case Operation.matrixTransp: printMas(matrixTransp(mas));break;
                 }
                 Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
                 Console.ReadKey(false);
@@ -134,6 +145,7 @@ namespace Calculator2
             Console.ReadKey();
         }
 
+        //Выводит меню и получает операцию от пользователя
         static Operation getOperation()
         {
             ConsoleKeyInfo oper;
@@ -176,6 +188,7 @@ namespace Calculator2
             throw new Exception();
         }
 
+        //Печатает массив в консоль
         static void printMas(int[,] mas)
         {
             for (int i = 0; i < mas.GetLength(0);i++)
