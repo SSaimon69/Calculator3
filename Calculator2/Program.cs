@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace Calculator2
+namespace Calculator3
 {
     class Program
     {
@@ -85,60 +86,78 @@ namespace Calculator2
         {
             Operation oper;
             int[,] mas = new int[0,0];
+            bool isBatch = false;
 
-            while (true)
+            if (args.Length == 0 || args[0] != "-batch")
             {
-                oper = getOperation();
-
-                if (oper == Operation.esc) break;
-                if (oper != Operation.init && mas.Length == 0)
+                while (true)
                 {
-                    Console.WriteLine("Что ты собрался делать с пустым массивом ??? Введи массив сначала (для продожения нажми любую клавишу)");
-                    Console.ReadKey();
-                    continue;
-                }
+                    oper = getOperation();
 
-                switch (oper)
-                {
-                    case Operation.init:
-                        {
-                            int count,count2;
-                            Console.Write("Введите размерность массива (для двумерного массива напишите размерность через пробел): ");
-                            string [] masStr = Console.ReadLine().Split(' ');
+                    if (oper == Operation.esc) break;
+                    if (oper != Operation.init && mas.Length == 0)
+                    {
+                        Console.WriteLine("Что ты собрался делать с пустым массивом ??? Введи массив сначала (для продожения нажми любую клавишу)");
+                        Console.ReadKey();
+                        continue;
+                    }
 
-                            count = int.Parse(masStr[0]);
-                            count2 = masStr.Length > 1 ? int.Parse(masStr[1]) : 1;
-                            mas = new int[count2,count];
-
-                            Console.WriteLine("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
-                            count = 0;
-                            count2 = 0;
-                            foreach (string num in Console.ReadLine().Split(' '))
+                    switch (oper)
+                    {
+                        case Operation.init:
                             {
-                                mas[count2, count++] = int.Parse(num);
-                                if (count == mas.GetLength(1))
+                                int count, count2;
+                                Console.Write("Введите размерность массива (для двумерного массива напишите размерность через пробел): ");
+                                string[] masStr = Console.ReadLine().Split(' ');
+
+                                count = int.Parse(masStr[0]);
+                                count2 = masStr.Length > 1 ? int.Parse(masStr[1]) : 1;
+                                mas = new int[count2, count];
+
+                                Console.WriteLine("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
+                                count = 0;
+                                count2 = 0;
+                                foreach (string num in Console.ReadLine().Split(' '))
                                 {
-                                    count = 0;
-                                    count2++;
+                                    mas[count2, count++] = int.Parse(num);
+                                    if (count == mas.GetLength(1))
+                                    {
+                                        count = 0;
+                                        count2++;
+                                    }
                                 }
+                                printMas(mas);
+                            }; break;
+                        case Operation.max: Console.WriteLine("Максимальный элемент: " + Max(mas)); break;
+                        case Operation.min: Console.WriteLine("Минимальный элемент: " + Min(mas)); break;
+                        case Operation.sum: Console.WriteLine("Сумма элементов массива: " + Sum(mas)); break;
+                        case Operation.midAr: Console.WriteLine("Среднее арифметическое массива: " + midAr(mas)); break;
+                        case Operation.midGeo: Console.WriteLine("Среднее геометрическое массива: " + midGeo(mas)); break;
+                        case Operation.matrixMulNum:
+                            {
+                                Console.Write("Введите число, на которое будет умножена матрица: ");
+                                printMas(matrixMulNum(mas, int.Parse(Console.ReadLine())));
                             }
-                            printMas(mas);
-                        }; break;
-                    case Operation.max: Console.WriteLine("Максимальный элемент: " + Max(mas)); break;
-                    case Operation.min: Console.WriteLine("Минимальный элемент: " + Min(mas)); break;
-                    case Operation.sum: Console.WriteLine("Сумма элементов массива: " + Sum(mas));break;
-                    case Operation.midAr: Console.WriteLine("Среднее арифметическое массива: " + midAr(mas));break;
-                    case Operation.midGeo: Console.WriteLine("Среднее геометрическое массива: " + midGeo(mas));break;
-                    case Operation.matrixMulNum:
-                        {
-                            Console.Write("Введите число, на которое будет умножена матрица: ");
-                            printMas(matrixMulNum(mas, int.Parse(Console.ReadLine())));
-                        }
-                        break;
-                    case Operation.matrixTransp: printMas(matrixTransp(mas));break;
+                            break;
+                        case Operation.matrixTransp: printMas(matrixTransp(mas)); break;
+                    }
+                    Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
+                    Console.ReadKey(false);
                 }
-                Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
-                Console.ReadKey(false);
+            }
+            else
+            {
+                Dictionary <string,Operation> masOper =
+                {
+                    {"-init", Operation.init},
+                    {"-max", Operation.max},
+                    {"-min", Operation.min}
+                };
+
+                for (int i = 1; i < args.Length; i++)
+                {
+
+                }
             }
             Console.Clear();
             Console.WriteLine("ВВы вышли из калькулятора");
