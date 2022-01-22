@@ -5,6 +5,9 @@ namespace Calculator3
 {
     class Program
     {
+        //Текущий массив
+        int[,] mas = new int[0,0];
+
         enum Operation
         {
             init,
@@ -17,6 +20,21 @@ namespace Calculator3
             matrixTransp,
             esc
         }
+
+        static Func<string[]> Init = (vvod) =>
+        {
+            int count = 0, count2 = 0;
+            foreach (string num in vvod)
+            {
+                mas[count2, count++] = int.Parse(num);
+                if (count == mas.GetLength(1))
+                {
+                    count = 0;
+                    count2++;
+                }
+            }
+        };
+
 
         static Func<int[,], int> Max = (mas) =>
         {
@@ -85,7 +103,6 @@ namespace Calculator3
         static void Main(string[] args)
         {
             Operation oper;
-            int[,] mas = new int[0,0];
             bool isBatch = false;
 
             if (args.Length == 0 || args[0] != "-batch")
@@ -115,17 +132,8 @@ namespace Calculator3
                                 mas = new int[count2, count];
 
                                 Console.WriteLine("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
-                                count = 0;
-                                count2 = 0;
-                                foreach (string num in Console.ReadLine().Split(' '))
-                                {
-                                    mas[count2, count++] = int.Parse(num);
-                                    if (count == mas.GetLength(1))
-                                    {
-                                        count = 0;
-                                        count2++;
-                                    }
-                                }
+                                Init(Console.ReadLine().Split(' '));
+                                
                                 printMas(mas);
                             }; break;
                         case Operation.max: Console.WriteLine("Максимальный элемент: " + Max(mas)); break;
