@@ -2,7 +2,7 @@
   "profiles": {
     "Calculator3": {
       "commandName": "Project",
-      "commandLineArgs": "-batch -init $3 v 2 3 -max"
+      "commandLineArgs": "-batch -init $3 1 2 3 -max -init $2 $2 1 2 f 4 -min -max"
     }
   }
 }

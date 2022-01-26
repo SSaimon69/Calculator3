@@ -245,10 +245,14 @@ namespace Calculator3
                 {
                     case Operation.init:
                         {
+                            mas = null;
                             Console.WriteLine("Пытаемся выполнить инициализацию...");
                             mas = Init(operands.ToArray());
+                            Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("Успешно инициализировали. Результат: ");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
                             printMas(mas);
+                            Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine("*************");
                         }
                         break;
@@ -256,7 +260,11 @@ namespace Calculator3
                         {
                             Console.WriteLine("Пытаемся выполнить поиск максимума...");
                             int res = Max(mas);
-                            Console.WriteLine("Максимум успешно найден. \nРезультат: " + res);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("Максимум успешно найден. \nРезультат: ");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine(res);
+                            Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine("*************");
                         }
                         break;
@@ -264,7 +272,11 @@ namespace Calculator3
                         {
                             Console.WriteLine("Пытаемся выполнить поиск минимума...");
                             int res = Min(mas);
-                            Console.WriteLine("Миниимум успешно найден. \nРезультат: " + res);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Миниимум успешно найден. \nРезультат: ");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine(res);
+                            Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine("*************");
                         }
                         break;
