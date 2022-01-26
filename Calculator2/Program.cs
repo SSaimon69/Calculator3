@@ -6,7 +6,13 @@ namespace Calculator3
     class Program
     {
         //Текущий массив
-        int[,] mas = new int[0,0];
+        static int[,] mas = new int[0,0];
+        static Dictionary<string, Operation> allowedOper = new Dictionary<string, Operation>
+            {
+                {"-init", Operation.init},
+                {"-max", Operation.max},
+                {"-min", Operation.min}
+            };
 
         enum Operation
         {
@@ -21,18 +27,24 @@ namespace Calculator3
             esc
         }
 
-        static Func<string[]> Init = (vvod) =>
+        static Func<string[], int[,]> Init = (vvod) =>
         {
             int count = 0, count2 = 0;
-            foreach (string num in vvod)
+
+            //Если передали не 2 размерности, то вторую делаем равной 1
+            bool get2Rank = vvod[1][0] == '$';
+            int [,] curMas = new int[get2Rank ? int.Parse(vvod[1].Substring(1)) : 1, int.Parse(vvod[0].Substring(1))];
+
+            for (int i = get2Rank ? 2 : 1; i < vvod.Length; i++)
             {
-                mas[count2, count++] = int.Parse(num);
-                if (count == mas.GetLength(1))
+                curMas[count++, count2] = int.Parse(vvod[i]);
+                if (count == curMas.GetLength(0))
                 {
                     count = 0;
                     count2++;
                 }
             }
+            return curMas;
         };
 
 
@@ -102,11 +114,10 @@ namespace Calculator3
 
         static void Main(string[] args)
         {
-            Operation oper;
-            bool isBatch = false;
-
             if (args.Length == 0 || args[0] != "-batch")
             {
+                Operation oper;
+                //Интерактивный режим
                 while (true)
                 {
                     oper = getOperation();
@@ -123,17 +134,8 @@ namespace Calculator3
                     {
                         case Operation.init:
                             {
-                                int count, count2;
-                                Console.Write("Введите размерность массива (для двумерного массива напишите размерность через пробел): ");
-                                string[] masStr = Console.ReadLine().Split(' ');
-
-                                count = int.Parse(masStr[0]);
-                                count2 = masStr.Length > 1 ? int.Parse(masStr[1]) : 1;
-                                mas = new int[count2, count];
-
-                                Console.WriteLine("Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз): ");
-                                Init(Console.ReadLine().Split(' '));
-                                
+                                Console.Write("Введите размерность массива (для двумерного массива напишите размерность через пробел), и далее Введите массив указанной размерности через пробел в одну строку (двумерный массив вводить слева-направо сверху-вниз):  ");
+                                mas = Init(Console.ReadLine().Split(' '));
                                 printMas(mas);
                             }; break;
                         case Operation.max: Console.WriteLine("Максимальный элемент: " + Max(mas)); break;
@@ -153,23 +155,65 @@ namespace Calculator3
                     Console.ReadKey(false);
                 }
             }
+            //Пакетный режим
             else
             {
-                Dictionary <string,Operation> masOper =
-                {
-                    {"-init", Operation.init},
-                    {"-max", Operation.max},
-                    {"-min", Operation.min}
-                };
+                List<string> operands = new List<string>();
+
+                string curOper = "";
 
                 for (int i = 1; i < args.Length; i++)
                 {
+                    //Нашли оператор
+                    if (allowedOper.ContainsKey(args[i])) 
+                    {
+                        //До этого был оператор ?
+                        if (curOper != "")
+                        {
+                            execBatchOper(curOper, operands);
+                        }
+                        operands.Clear();
+                        curOper = args[i];
 
+                        //Предусматриваем вариант что массив закончился оператором
+                        if (i == args.Length - 1) execBatchOper(curOper, operands);
+                    }
+                    else
+                    {
+                        operands.Add(args[i]);
+
+                        //Предусматриваем вариант что массив закончился операндом
+                        if (i == args.Length - 1) execBatchOper(curOper, operands);
+                    }
                 }
             }
-            Console.Clear();
             Console.WriteLine("ВВы вышли из калькулятора");
             Console.ReadKey();
+        }
+
+        static void execBatchOper(string curOper, List<string> operands)
+        {
+
+            switch (allowedOper[curOper])
+            {
+                case Operation.init:
+                    {
+                        mas = Init(operands.ToArray());
+                        printMas(mas);
+                    }
+                    break;
+                case Operation.max:
+                    {
+
+                        Console.WriteLine(Max(mas));
+                    }
+                    break;
+                case Operation.min:
+                    {
+                        Min(mas);
+                    }
+                    break;
+            }
         }
 
         //Выводит меню и получает операцию от пользователя
