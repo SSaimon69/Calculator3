@@ -30,36 +30,56 @@ namespace Calculator3
         static Func<string[], int[,]> Init = (vvod) =>
         {
             int count = 0, count2 = 0;
-
-            //Если передали не 2 размерности, то вторую делаем равной 1
-            bool get2Rank = vvod[1][0] == '$';
-            int [,] curMas = new int[get2Rank ? int.Parse(vvod[1].Substring(1)) : 1, int.Parse(vvod[0].Substring(1))];
-
-            for (int i = get2Rank ? 2 : 1; i < vvod.Length; i++)
+            try
             {
-                curMas[count++, count2] = int.Parse(vvod[i]);
-                if (count == curMas.GetLength(0))
+                //Если передали не 2 размерности, то вторую делаем равной 1
+                bool get2Rank = vvod[1][0] == '$';
+                int[,] curMas = new int[get2Rank ? int.Parse(vvod[1].Substring(1)) : 1, int.Parse(vvod[0].Substring(1))];
+
+                for (int i = get2Rank ? 2 : 1; i < vvod.Length; i++)
                 {
-                    count = 0;
-                    count2++;
+                    curMas[count++, count2] = int.Parse(vvod[i]);
+                    if (count == curMas.GetLength(0))
+                    {
+                        count = 0;
+                        count2++;
+                    }
                 }
+                return curMas;
             }
-            return curMas;
+            catch(Exception e)
+            {
+                throw new OperationException("Инициализация", "mas = {input}", e);
+            }
         };
 
 
         static Func<int[,], int> Max = (mas) =>
         {
-            int max = mas[0, 0];
-            foreach (int elem in mas) max = elem > max ? elem : max;
-            return max;
+            try
+            {
+                int max = mas[0, 0];
+                foreach (int elem in mas) max = elem > max ? elem : max;
+                return max;
+            }
+            catch (Exception e)
+            {
+                throw new OperationException("Поиск максимума", "max = Max(mas)", e);
+            }
         };
 
         static Func<int[,], int> Min = (mas) =>
         {
-            int min = mas[0, 0];
-            foreach (int elem in mas) min = elem < min ? elem : min;
-            return min;
+            try
+            {
+                int min = mas[0, 0];
+                foreach (int elem in mas) min = elem < min ? elem : min;
+                return min;
+            }
+            catch (Exception e)
+            {
+                throw new OperationException("Поиск минимума", "max = Min(mas)", e);
+            }
         };
 
         static Func<int[,], int> Sum = (mas) =>
@@ -159,61 +179,116 @@ namespace Calculator3
             else
             {
                 List<string> operands = new List<string>();
+                int counterEx = 0, counterSucEx = 0, counterFailEx = 0;
 
                 string curOper = "";
+                int resTryOper = 0;
 
                 for (int i = 1; i < args.Length; i++)
                 {
                     //Нашли оператор
-                    if (allowedOper.ContainsKey(args[i])) 
+                    if (allowedOper.ContainsKey(args[i]))
                     {
+                        counterEx++;
                         //До этого был оператор ?
                         if (curOper != "")
                         {
-                            execBatchOper(curOper, operands);
+                            resTryOper = tryExecBatchOper(curOper, operands);
+                            if (resTryOper == 0) counterSucEx++;
+                            else counterFailEx++;
+                            if (resTryOper == 2) break;
                         }
+
                         operands.Clear();
                         curOper = args[i];
 
                         //Предусматриваем вариант что массив закончился оператором
-                        if (i == args.Length - 1) execBatchOper(curOper, operands);
+                        if (i == args.Length - 1)
+                        {
+                            resTryOper = tryExecBatchOper(curOper, operands);
+                            if (resTryOper == 0) counterSucEx++;
+                            else counterFailEx++;
+                            if (resTryOper == 2) break;
+                        }
                     }
                     else
                     {
                         operands.Add(args[i]);
 
                         //Предусматриваем вариант что массив закончился операндом
-                        if (i == args.Length - 1) execBatchOper(curOper, operands);
+                        if (i == args.Length - 1)
+                        {
+                            resTryOper = tryExecBatchOper(curOper, operands);
+                            if (resTryOper == 0) counterSucEx++;
+                            else counterFailEx++;
+                            if (resTryOper == 2) break;
+                        }
+
                     }
                 }
+                
+                Console.WriteLine("*********************");
+                Console.WriteLine("Статистика пакетного режима: ");
+                Console.WriteLine("Поступило заданий на вход: " + counterEx);
+                Console.WriteLine("Успешно выполнено заданий: " + counterSucEx);
+                Console.WriteLine("Заданий с ошибками: " + counterFailEx);
             }
             Console.WriteLine("ВВы вышли из калькулятора");
             Console.ReadKey();
         }
 
-        static void execBatchOper(string curOper, List<string> operands)
+        static int tryExecBatchOper(string curOper, List<string> operands)
         {
-
-            switch (allowedOper[curOper])
+            try
             {
-                case Operation.init:
-                    {
-                        mas = Init(operands.ToArray());
-                        printMas(mas);
-                    }
-                    break;
-                case Operation.max:
-                    {
-
-                        Console.WriteLine(Max(mas));
-                    }
-                    break;
-                case Operation.min:
-                    {
-                        Min(mas);
-                    }
-                    break;
+                switch (allowedOper[curOper])
+                {
+                    case Operation.init:
+                        {
+                            Console.WriteLine("Пытаемся выполнить инициализацию...");
+                            mas = Init(operands.ToArray());
+                            Console.WriteLine("Успешно инициализировали. Результат: ");
+                            printMas(mas);
+                            Console.WriteLine("*************");
+                        }
+                        break;
+                    case Operation.max:
+                        {
+                            Console.WriteLine("Пытаемся выполнить поиск максимума...");
+                            int res = Max(mas);
+                            Console.WriteLine("Максимум успешно найден. \nРезультат: " + res);
+                            Console.WriteLine("*************");
+                        }
+                        break;
+                    case Operation.min:
+                        {
+                            Console.WriteLine("Пытаемся выполнить поиск минимума...");
+                            int res = Min(mas);
+                            Console.WriteLine("Миниимум успешно найден. \nРезультат: " + res);
+                            Console.WriteLine("*************");
+                        }
+                        break;
+                }
             }
+            catch (OperationException e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("{" + e.Formula + "} ERROR ({" + e.OperationName + "}): {" + e.Message + "}");
+                Console.ForegroundColor = ConsoleColor.White;
+                //Мягкая ошибка
+                return 1;
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.Message + e.StackTrace);
+                Console.ForegroundColor = ConsoleColor.White;
+                //Грубая ошибка
+                return 2;
+            }
+
+            //Нет ошибок
+            return 0;
         }
 
         //Выводит меню и получает операцию от пользователя
@@ -269,6 +344,19 @@ namespace Calculator3
                     Console.Write(mas[i, j] + " ");
                 }
                 Console.WriteLine();
+            }
+        }
+
+        public class OperationException : Exception
+        {
+            public string OperationName { get; set; }
+            public string Formula { get; set; }
+
+            public OperationException(string operationName, string formula, Exception innerException)
+                :base(innerException?.Message,innerException)
+            {
+                OperationName = operationName;
+                Formula = formula;
             }
         }
     }
